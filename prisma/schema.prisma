@@ -7,18 +7,64 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-model Course {
-  id     Int    @id @default(autoincrement())
-  name   String
-  userId Int
-  user   User   @relation(fields: [userId], references: [id])
+model Rating {
+  id           Int        @id @default(autoincrement())
+  score        Int
+  body         String
+  golfCourseId Int
+  golfCourse   GolfCourse @relation(fields: [golfCourseId], references: [id])
+  images       String[]
+  createdAt    DateTime   @default(now())
+}
+
+model GolfCourse {
+  id       Int       @id @default(autoincrement())
+  name     String
+  type     String
+  city     String
+  state    String
+  ownerId  Int
+  owner    Owner     @relation(fields: [ownerId], references: [id])
+  ratings  Rating[]
+  images   String[]
+  rates    Rate[]
+  teeTimes TeeTime[]
+  user     User[]
 }
 
 model User {
-  id              Int      @id @default(autoincrement())
-  firstName       String
-  lastName        String
-  email           String
-  password        String
-  favoriteCourses Course[]
+  id                  Int          @id @default(autoincrement())
+  firstName           String
+  lastName            String
+  email               String
+  password            String
+  isOwner             Boolean      @default(false)
+  favoriteGolfCourses GolfCourse[]
+}
+
+model Owner {
+  id               Int          @id @default(autoincrement())
+  firstName        String
+  lastName         String
+  email            String
+  password         String
+  isOwner          Boolean      @default(true)
+  golfCoursesOwned GolfCourse[]
+}
+
+model TeeTime {
+  id           Int        @id @default(autoincrement())
+  golfCourseId Int
+  golfCourse   GolfCourse @relation(fields: [golfCourseId], references: [id])
+  time         DateTime
+  numHoles     Int
+}
+
+model Rate {
+  id           Int        @id @default(autoincrement())
+  price        Float
+  type         String
+  numHoles     Int
+  golfCourse   GolfCourse @relation(fields: [golfCourseId], references: [id])
+  golfCourseId Int
 }

@@ -4,7 +4,7 @@ import bcrypt from 'bcrypt'
 
 const db = new PrismaClient()
  
-export async function POST(req: Request, res: Response) {
+export async function POST(req: Request) {
   try {
 
     const loginData = await req.json()

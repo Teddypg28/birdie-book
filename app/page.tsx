@@ -1,26 +1,21 @@
 'use client'
 
+import convertDateTimeToTime from "@/helpers/convertDateTimeToTime";
+import convertTimeToDateTime from "@/helpers/convertTimeToDateTime";
 import { useEffect, useState } from "react";
 
 export default function Home() {
 
-  const [user, setUser] = useState()
+  console.log(convertDateTimeToTime('2025-02-14T00:00:00'))
 
   useEffect(() => {
 
-    const fetchUser = async () => {
-      const res = await fetch('/api/users', {method: 'GET'})
-      const data = await res.json()
-      setUser(data[0].firstName)
-    }
-
-    fetchUser()
 
   }, [])
 
   return (
     <div>
-      <h1>Hello, {user}</h1>
+      <h1>Hello</h1>
     </div>
   );
 }
