@@ -1,6 +1,7 @@
 import { PrismaClient } from '@prisma/client'
 
 import bcrypt from 'bcrypt'
+import jwt from 'jsonwebtoken'
 
 const db = new PrismaClient()
  
@@ -24,7 +25,10 @@ export async function POST(req: Request) {
     // compare password submitted to password hash stored
     const isCorrect = await bcrypt.compare(password, user.password)
     if (isCorrect) {
-        return new Response('Successfully logged in!', {status: 200})
+        const userDetails = {id: user.id, firstName: user.firstName}
+        const token = jwt.sign(userDetails, process.env.JWT_SECRET as string, {expiresIn: '1h'})
+
+        return new Response(JSON.stringify({token}), {status: 200})
     } else {
         return new Response('Email or password does not match', {status: 400})
     }

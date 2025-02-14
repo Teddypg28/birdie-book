@@ -18,18 +18,19 @@ model Rating {
 }
 
 model GolfCourse {
-  id       Int       @id @default(autoincrement())
-  name     String
-  type     String
-  city     String
-  state    String
-  ownerId  Int
-  owner    Owner     @relation(fields: [ownerId], references: [id])
-  ratings  Rating[]
-  images   String[]
-  rates    Rate[]
-  teeTimes TeeTime[]
-  user     User[]
+  id          Int       @id @default(autoincrement())
+  name        String
+  type        String
+  description String?
+  city        String
+  state       String
+  ownerId     Int
+  owner       Owner     @relation(fields: [ownerId], references: [id], onDelete: Cascade)
+  ratings     Rating[]
+  images      String[]
+  rates       Rate[]
+  teeTimes    TeeTime[]
+  user        User[]
 }
 
 model User {
@@ -39,6 +40,7 @@ model User {
   email               String
   password            String
   isOwner             Boolean      @default(false)
+  teeTimesCreated     TeeTime[]
   favoriteGolfCourses GolfCourse[]
 }
 
@@ -58,6 +60,9 @@ model TeeTime {
   golfCourse   GolfCourse @relation(fields: [golfCourseId], references: [id])
   time         DateTime
   numHoles     Int
+  userId       Int
+  user         User       @relation(fields: [userId], references: [id])
+  players      String[]
 }
 
 model Rate {

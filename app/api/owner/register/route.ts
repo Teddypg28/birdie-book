@@ -10,15 +10,20 @@ export async function POST(req: Request) {
     const signupData = await req.json()
     const { firstName, lastName, email, password, courseName, courseType, courseCity, courseState } = signupData
   
-    // user didn't complete the full registration form
+    // owner didn't complete the full registration form
     if (!firstName || !lastName || !email || !password || !courseName || !courseType || !courseCity || !courseState) {
       return new Response('Missing required form data', {status: 400})
     }
   
-    // user with email already exists in the db
+    // owner with email already exists in the db
     const user = await db.owner.findFirst({where: {email: {equals: email}}})
     if (user) {
       return new Response('Owner with this email already exists', {status: 400})
+    }
+
+    const golfCourseExists = await db.golfCourse.findFirst({where: {name: {equals: courseName}}})
+    if (golfCourseExists) {
+        return new Response('Golf course already owned. Contact the owner to gain admin access', {status: 400})
     }
   
     // encrypt password to safely store in the db
