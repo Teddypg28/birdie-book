@@ -26,19 +26,19 @@ export async function POST(req: NextRequest) {
     }
 
     // invalid tee time data (course does not exist, invalid time slot, too many players, no players, invalid number of holes)
-    const course = await db.golfCourse.findFirst({where: {id: {equals: parseInt(courseId)}}})
+    const course = await db.golfCourse.findFirst({where: {id: {equals: courseId}}})
     if (!validTeeTimes.includes(convertDateTimeToTime(time)) || !course || players.length > 4 || players.length < 1 || ![9, 18].includes(numHoles)) {
         return new NextResponse('Error creating tee time. Invalid course, time slot, number of holes, or number of players', {status: 400})
     }
 
     // tee time already booked out
-    const teeTime = await db.teeTime.findFirst({where: {golfCourseId: parseInt(courseId), time: new Date(time)}})
+    const teeTime = await db.teeTime.findFirst({where: {golfCourseId: courseId, time: new Date(time)}})
     if (teeTime) {
       return new NextResponse('Tee time is already booked', {status: 400})
     }
   
     // book tee time
-    await db.teeTime.create({data: {golfCourseId: parseInt(courseId), time: new Date(time), numHoles, players, userId: verifiedUserToken.payload.id as number}})
+    await db.teeTime.create({data: {golfCourseId: courseId, time: new Date(time), numHoles, players, userId: verifiedUserToken.payload.id as string}})
     return new NextResponse('Tee time successfully booked', {status: 200})
 
   } catch (error) {

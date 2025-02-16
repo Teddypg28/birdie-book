@@ -8,23 +8,23 @@ datasource db {
 }
 
 model Rating {
-  id           Int        @id @default(autoincrement())
+  id           String     @id @default(uuid())
   score        Int
   body         String
-  golfCourseId Int
-  golfCourse   GolfCourse @relation(fields: [golfCourseId], references: [id])
+  golfCourseId String
+  golfCourse   GolfCourse @relation(fields: [golfCourseId], references: [id], onDelete: Cascade)
   images       String[]
   createdAt    DateTime   @default(now())
 }
 
 model GolfCourse {
-  id          Int       @id @default(autoincrement())
+  id          String    @id @default(uuid())
   name        String
   type        String
   description String?
   city        String
   state       String
-  ownerId     Int
+  ownerId     String
   owner       Owner     @relation(fields: [ownerId], references: [id], onDelete: Cascade)
   ratings     Rating[]
   images      String[]
@@ -34,7 +34,7 @@ model GolfCourse {
 }
 
 model User {
-  id                  Int          @id @default(autoincrement())
+  id                  String       @id @default(uuid())
   firstName           String
   lastName            String
   email               String
@@ -45,7 +45,7 @@ model User {
 }
 
 model Owner {
-  id               Int          @id @default(autoincrement())
+  id               String       @id @default(uuid())
   firstName        String
   lastName         String
   email            String
@@ -54,14 +54,15 @@ model Owner {
   golfCoursesOwned GolfCourse[]
 }
 
+// IMPLEMENT UUID IDS
 model TeeTime {
-  id           Int        @id @default(autoincrement())
-  golfCourseId Int
-  golfCourse   GolfCourse @relation(fields: [golfCourseId], references: [id])
+  id           String     @id @default(uuid())
+  golfCourseId String
+  golfCourse   GolfCourse @relation(fields: [golfCourseId], references: [id], onDelete: Cascade)
   time         DateTime
   numHoles     Int
-  userId       Int
-  user         User       @relation(fields: [userId], references: [id])
+  userId       String
+  user         User       @relation(fields: [userId], references: [id], onDelete: Cascade)
   players      String[]
 }
 
@@ -70,6 +71,6 @@ model Rate {
   price        Float
   type         String
   numHoles     Int
-  golfCourse   GolfCourse @relation(fields: [golfCourseId], references: [id])
-  golfCourseId Int
+  golfCourse   GolfCourse @relation(fields: [golfCourseId], references: [id], onDelete: Cascade)
+  golfCourseId String
 }

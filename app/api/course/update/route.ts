@@ -8,15 +8,15 @@ export async function POST(req: NextRequest) {
 
     const courseData = await req.json()
 
-    const { name, city, state, type } = courseData
+    const { name, city, state, type, id } = courseData
   
     // user submitted with blank values that are required
-    if (!name || !city || !state || !type) {
+    if (!name || !city || !state || !type || !id) {
       return new NextResponse('Missing required course data', {status: 400})
     }
 
     // update course
-    await db.golfCourse.update({where: {id: courseData.id}, data: {...courseData}})
+    await db.golfCourse.update({where: {id}, data: {...courseData}})
   
     return new NextResponse('Course successfully updated', {status: 200})
 

@@ -16,7 +16,7 @@ export async function POST(req: NextRequest) {
     }
 
     // check if tee time exists
-    const teeTime = await db.teeTime.findFirst({where: {id: {equals: parseInt(teeTimeId)}}})
+    const teeTime = await db.teeTime.findFirst({where: {id: {equals: teeTimeId}}})
     if (!teeTime) {
       return new NextResponse('Error updating tee time. Tee time does not exist', {status: 400})
     }
@@ -33,7 +33,7 @@ export async function POST(req: NextRequest) {
     }
 
     // update tee time
-    await db.teeTime.update({where: {id: parseInt(teeTimeId)}, data: {numHoles, players}})
+    await db.teeTime.update({where: {id: teeTimeId}, data: {numHoles, players}})
     return new NextResponse('Tee time successfully updated', {status: 200})
 
   } catch (error) {

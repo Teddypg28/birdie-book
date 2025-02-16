@@ -9,7 +9,11 @@ export async function POST(req: NextRequest) {
     const data = await req.json()
     const { teeTimeId } = data
 
-    const teeTime = await db.teeTime.findFirst({where: {id: {equals: parseInt(teeTimeId)}}})
+    if (!teeTimeId) {
+      return new NextResponse('Missing required tee time id', {status: 400})
+    }
+
+    const teeTime = await db.teeTime.findFirst({where: {id: {equals: teeTimeId}}})
     if (!teeTime) {
       return new NextResponse('Tee time does not exist', {status: 400})
     }
@@ -20,7 +24,7 @@ export async function POST(req: NextRequest) {
       return new NextResponse('Unauthorized to delete tee times', {status: 401})
     }
 
-    await db.teeTime.delete({where: {id: parseInt(teeTimeId)}})
+    await db.teeTime.delete({where: {id: teeTimeId}})
     return new NextResponse('Tee time successfully cancelled', {status: 200})
 
   } catch (error) {
