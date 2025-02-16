@@ -15,8 +15,7 @@ export async function POST(req: Request) {
 
     // update tee time
     await db.teeTime.update({where: {id: parseInt(teeTimeId)}, data: {numHoles, players}})
-  
-    return new Response('Tee time successfully booked!', {status: 200})
+    return new Response('Tee time successfully updated!', {status: 200})
 
   } catch (error) {
 
