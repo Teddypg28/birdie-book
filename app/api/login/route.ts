@@ -1,12 +1,13 @@
 import { PrismaClient } from '@prisma/client'
 
 import bcrypt from 'bcrypt'
-import jwt from 'jsonwebtoken'
+import { SignJWT } from 'jose'
 import * as cookie from 'cookie'
+import { NextRequest, NextResponse } from 'next/server'
 
 const db = new PrismaClient()
  
-export async function POST(req: Request) {
+export async function POST(req: NextRequest) {
   try {
 
     const loginData = await req.json()
@@ -14,7 +15,7 @@ export async function POST(req: Request) {
   
     // user didn't complete the full login form
     if (!email || !password) {
-      return new Response('Missing credentials', {status: 400})
+      return new NextResponse('Missing credentials', {status: 400})
     }
 
     // check for user or owner
@@ -30,26 +31,30 @@ export async function POST(req: Request) {
 
     // if no user or owner found, respond with vague error
     if (!userOwner) {
-        return new Response('Email or password does not match', {status: 400})
+        return new NextResponse('Email or password does not match', {status: 400})
     }
 
     // compare password submitted to password hash stored
     const isCorrect = await bcrypt.compare(password, userOwner.password)
     if (isCorrect) {
         const userDetails = {id: userOwner.id, firstName: userOwner.firstName, isOwner: userOwner.isOwner}
-        const token = jwt.sign(userDetails, process.env.JWT_SECRET as string, {expiresIn: '1h'})
+        const secret = new TextEncoder().encode(process.env.JWT_SECRET)
+        const token = await new SignJWT(userDetails)
+          .setProtectedHeader({ alg: 'HS256' })
+          .setExpirationTime('1hr')
+          .sign(secret)
         const setCookie = cookie.serialize('token', token, { httpOnly: true })
         // respond with cookie containing jwt
-        const response = new Response('Login Successful', {status: 200})
+        const response = new NextResponse('Login Successful', {status: 200})
         response.headers.set('Set-Cookie', setCookie)
         return response
     } else {
-        return new Response('Email or password does not match', {status: 400})
+        return new NextResponse('Email or password does not match', {status: 400})
     }
 
   } catch (error) {
 
-    return new Response('Sorry, something went wrong on the server', {status: 500})
+    return new NextResponse('Sorry, something went wrong on the server', {status: 500})
     
   }
 } 

@@ -1,8 +1,9 @@
 import { PrismaClient } from '@prisma/client'
+import { NextRequest, NextResponse } from 'next/server'
 
 const db = new PrismaClient()
  
-export async function POST(req: Request) {
+export async function POST(req: NextRequest) {
   try {
 
     const courseData = await req.json()
@@ -11,17 +12,17 @@ export async function POST(req: Request) {
   
     // user submitted with blank values that are required
     if (!name || !city || !state || !type) {
-      return new Response('Missing required course data', {status: 400})
+      return new NextResponse('Missing required course data', {status: 400})
     }
 
     // update course
     await db.golfCourse.update({where: {id: courseData.id}, data: {...courseData}})
   
-    return new Response('Course successfully updated', {status: 200})
+    return new NextResponse('Course successfully updated', {status: 200})
 
   } catch (error) {
 
-    return new Response('Sorry, something went wrong on the server', {status: 500})
+    return new NextResponse('Sorry, something went wrong on the server', {status: 500})
     
   }
 } 
