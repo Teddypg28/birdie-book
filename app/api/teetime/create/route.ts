@@ -3,7 +3,7 @@ import validTeeTimes from '@/validTeeTimes'
 import { PrismaClient } from '@prisma/client'
 
 import { NextRequest, NextResponse } from 'next/server'
-import validateTeetimePermissions from '@/auth/validateTeetimePermissions'
+import verifyJWT from '@/auth/verifyJWT'
 
 const db = new PrismaClient()
  
@@ -11,7 +11,7 @@ export async function POST(req: NextRequest) {
   try {  
     
     // verify that an authorized user is making the request
-    const verifiedUserToken = await validateTeetimePermissions(req)
+    const verifiedUserToken = await verifyJWT(req)
     if (!verifiedUserToken) {
       return new NextResponse('Unauthorized to create tee times', {status: 401})
     }

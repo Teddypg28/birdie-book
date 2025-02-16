@@ -3,7 +3,7 @@ import React from 'react'
 const page = () => {
   return (
     <div>
-        Protected Course Route
+      Login Page
     </div>
   )
 }

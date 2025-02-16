@@ -1,35 +1,24 @@
-import { parse } from 'cookie'
-import { NextResponse } from 'next/server'
+import { NextRequest, NextResponse } from 'next/server'
 
-import * as jose from 'jose'
+import authentication from './app/middleware/authentication';
+import authorization from './app/middleware/authorization';
 
-export default async function middleware(request: Request) {
+export default async function middleware(request: NextRequest) {
     try {
-        // check for cookies
-        const cookies = request.headers.get('Cookie')
-        if (!cookies) {
-            return NextResponse.redirect(new URL('/not-authorized', request.url), {status: 302})
+        const authenticationResponse = await authentication(request)
+        if (authenticationResponse) return authenticationResponse
+
+        if (['/api/course/update'].includes(request.nextUrl.pathname)) {
+            return await authorization(request)
         }
-        // check for token cookie
-        const parsedCookies = parse(cookies)
-        const authToken = parsedCookies.token
-        if (!authToken) {
-            return NextResponse.redirect(new URL('/not-authorized', request.url), {status: 302})
-        } 
-        // verify token
-        const secret = new TextEncoder().encode(process.env.JWT_SECRET)
-        const verifiedToken = await jose.jwtVerify(authToken, secret)
-        if (verifiedToken.payload.isOwner) {
-            return NextResponse.next()
-        } else {
-            return NextResponse.redirect(new URL('/not-authorized', request.url), {status: 302});
-        }
+
+        return NextResponse.next()
     } catch (error) {
-        return NextResponse.redirect(new URL('/not-authorized', request.url), {status: 302})
+        return NextResponse.redirect(new URL('/not-authorized', request.url));        
     }
 }
 
 export const config = {
-    matcher: ['/course', '/api/course/update'],
+    matcher: ['/api/course/update', '/']
 };
   

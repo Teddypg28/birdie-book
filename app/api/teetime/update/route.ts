@@ -1,7 +1,7 @@
 import { PrismaClient } from '@prisma/client'
 import { NextRequest, NextResponse } from 'next/server'
 
-import validateTeetimePermissions from '@/auth/validateTeetimePermissions'
+import verifyJWT from '@/auth/verifyJWT'
 
 const db = new PrismaClient()
  
@@ -22,7 +22,7 @@ export async function POST(req: NextRequest) {
     }
 
     // verify that an authorized user is making the request and that the one who booked the tee time is updating it (extra security layer)
-    const verifiedUserToken = await validateTeetimePermissions(req)
+    const verifiedUserToken = await verifyJWT(req)
     if (!verifiedUserToken || teeTime.userId !== verifiedUserToken.payload.id) {
       return new NextResponse('Unauthorized to update tee times', {status: 401})
     }

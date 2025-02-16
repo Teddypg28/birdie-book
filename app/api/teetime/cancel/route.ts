@@ -1,4 +1,4 @@
-import validateTeetimePermissions from '@/auth/validateTeetimePermissions'
+import validateTeetimePermissions from '@/auth/verifyJWT'
 import { PrismaClient } from '@prisma/client'
 import { NextRequest, NextResponse } from 'next/server'
 
