@@ -9,13 +9,16 @@ export default async function middleware(request: NextRequest) {
         if (!verifiedUserToken) {
             return NextResponse.redirect(new URL('/login', request.url), {status: 302})
         }
-        // make sure user is authorized depending on the route
+        // make sure user has owner privileges for certain protected routes
         if (['/api/course/update'].includes(request.nextUrl.pathname)) {
             if (!verifiedUserToken.payload.isOwner) {
                 return NextResponse.redirect(new URL('/not-authorized', request.url), {status: 302})
             }
         }
-        return NextResponse.next()
+        // send the token to the next route
+        const response = NextResponse.next()
+        response.headers.set('auth-user-id', verifiedUserToken.payload.id as string)
+        return response
     } catch (error) {
         return NextResponse.redirect(new URL('/not-authorized', request.url));        
     }

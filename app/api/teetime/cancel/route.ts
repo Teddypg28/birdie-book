@@ -1,4 +1,3 @@
-import verifyJWT from '@/auth/verifyJWT'
 import { PrismaClient } from '@prisma/client'
 import { NextRequest, NextResponse } from 'next/server'
 
@@ -6,6 +5,7 @@ const db = new PrismaClient()
  
 export async function POST(req: NextRequest) {
   try {
+    
     const data = await req.json()
     const { teeTimeId } = data
 
@@ -18,9 +18,9 @@ export async function POST(req: NextRequest) {
       return new NextResponse('Tee time does not exist', {status: 400})
     }
 
-    // verify that the one who booked the tee time is cancelling it (extra security layer)
-    const verifiedUserToken = await verifyJWT(req)
-    if (verifiedUserToken && teeTime.userId !== verifiedUserToken.payload.id) {
+    // verify that the one who booked the tee time is the one cancelling it (extra security layer)
+    const authTokenUserId = req.headers.get('auth-user-id') as string
+    if (teeTime.userId !== authTokenUserId) {
       return new NextResponse('Unauthorized to cancel tee times', {status: 401})
     }
 

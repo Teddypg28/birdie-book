@@ -10,10 +10,10 @@ export async function POST(req: NextRequest) {
     
         const reviewObjectData = Object.fromEntries(reviewFormData.entries())
     
-        const { rating, body, golfCourseId } = reviewObjectData
+        const { rating, body, golfCourseId, reviewId } = reviewObjectData
     
         // verify that all of the necessary review data is included
-        if (!rating || !body || !golfCourseId) {
+        if (!rating || !body || !golfCourseId || !reviewId) {
           return new NextResponse('Missing required review data', {status: 400})
         }
         // verify that the course being reviewed exists in the db
@@ -22,12 +22,20 @@ export async function POST(req: NextRequest) {
             return new NextResponse('Golf course with the given id does not exist', {status: 400})
         }
 
-        // extract user id from headers
+        const review = await db.review.findFirst({where: {id: {equals: reviewId as string}}})
+        if (!review) {
+            return new NextResponse('The review you are trying to update does not exist', {status: 400})
+        }
+
+        // verify that the user updating the review is the user who created the review (extra security layer)
         const authTokenUserId = req.headers.get('auth-user-id') as string
+        if (review.userId !== authTokenUserId) {
+            return new NextResponse('Unauthorized to update this review', {status: 401})
+        }
         
         // create the review
-        await db.review.create({data: {body: body as string, rating: parseInt(rating as string), golfCourseId: golfCourseId as string, userId: authTokenUserId}})
-        return new NextResponse('Review successfully posted', {status: 200})
+        await db.review.update({where: {id: authTokenUserId}, data: {body: body as string, rating: parseInt(rating as string), golfCourseId: golfCourseId as string}})
+        return new NextResponse('Review successfully updated', {status: 200})
 
 
     } catch (error) {

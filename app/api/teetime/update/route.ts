@@ -1,8 +1,6 @@
 import { PrismaClient } from '@prisma/client'
 import { NextRequest, NextResponse } from 'next/server'
 
-import verifyJWT from '@/auth/verifyJWT'
-
 const db = new PrismaClient()
  
 export async function POST(req: NextRequest) {
@@ -22,14 +20,14 @@ export async function POST(req: NextRequest) {
     }
 
     // verify that the one who booked the tee time is updating it (extra security layer)
-    const verifiedUserToken = await verifyJWT(req)
-    if (verifiedUserToken && teeTime.userId !== verifiedUserToken.payload.id) {
+    const authTokenUserId = req.headers.get('auth-user-id') as string
+    if (teeTime.userId !== authTokenUserId) {
       return new NextResponse('Unauthorized to update tee times', {status: 401})
     }
 
     // invalid tee time data (too many players, no players, invalid number of holes)
     if (players.length > 4 || players.length < 1 || ![9, 18].includes(numHoles)) {
-        return new NextResponse('Error creating tee time. Invalid course, time slot, number of holes, or number of players', {status: 400})
+        return new NextResponse('Error updating tee time. Invalid course, time slot, number of holes, or number of players', {status: 400})
     }
 
     // update tee time
