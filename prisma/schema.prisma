@@ -7,9 +7,9 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-model Rating {
+model Review {
   id           String     @id @default(uuid())
-  score        Int
+  rating       Int
   body         String
   golfCourseId String
   golfCourse   GolfCourse @relation(fields: [golfCourseId], references: [id], onDelete: Cascade)
@@ -26,7 +26,7 @@ model GolfCourse {
   state       String
   ownerId     String
   owner       Owner     @relation(fields: [ownerId], references: [id], onDelete: Cascade)
-  ratings     Rating[]
+  reviews     Review[]
   images      String[]
   rates       Rate[]
   teeTimes    TeeTime[]
@@ -54,7 +54,6 @@ model Owner {
   golfCoursesOwned GolfCourse[]
 }
 
-// IMPLEMENT UUID IDS
 model TeeTime {
   id           String     @id @default(uuid())
   golfCourseId String

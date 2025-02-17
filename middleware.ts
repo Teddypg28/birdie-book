@@ -1,17 +1,20 @@
 import { NextRequest, NextResponse } from 'next/server'
 
-import authentication from './app/middleware/authentication';
-import authorization from './app/middleware/authorization';
+import verifyJWT from './auth/verifyJWT';
 
 export default async function middleware(request: NextRequest) {
     try {
-        const authenticationResponse = await authentication(request)
-        if (authenticationResponse) return authenticationResponse
-
-        if (['/api/course/update'].includes(request.nextUrl.pathname)) {
-            return await authorization(request)
+        // make sure user is authenticated via a jwt
+        const verifiedUserToken = await verifyJWT(request)
+        if (!verifiedUserToken) {
+            return NextResponse.redirect(new URL('/login', request.url), {status: 302})
         }
-
+        // make sure user is authorized depending on the route
+        if (['/api/course/update'].includes(request.nextUrl.pathname)) {
+            if (!verifiedUserToken.payload.isOwner) {
+                return NextResponse.redirect(new URL('/not-authorized', request.url), {status: 302})
+            }
+        }
         return NextResponse.next()
     } catch (error) {
         return NextResponse.redirect(new URL('/not-authorized', request.url));        
@@ -19,6 +22,6 @@ export default async function middleware(request: NextRequest) {
 }
 
 export const config = {
-    matcher: ['/api/course/update', '/']
+    matcher: ['/api/course/update', '/api/review/:path*', '/api/teetime/:path*']
 };
   

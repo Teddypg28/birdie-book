@@ -10,7 +10,7 @@ export async function POST(req: NextRequest) {
 
     const { name, city, state, type, id } = courseData
   
-    // user submitted with blank values that are required
+    // check for user-submitted blank values that are required
     if (!name || !city || !state || !type || !id) {
       return new NextResponse('Missing required course data', {status: 400})
     }

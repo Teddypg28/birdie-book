@@ -43,7 +43,7 @@ export async function POST(req: NextRequest) {
           .setProtectedHeader({ alg: 'HS256' })
           .setExpirationTime('1hr')
           .sign(secret)
-        const setCookie = cookie.serialize('token', token, { httpOnly: true })
+        const setCookie = cookie.serialize('token', token, { httpOnly: true, maxAge: 60*60 })
         // respond with cookie containing jwt
         const response = new NextResponse('Login Successful', {status: 200})
         response.headers.set('Set-Cookie', setCookie)

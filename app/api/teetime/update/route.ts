@@ -21,9 +21,9 @@ export async function POST(req: NextRequest) {
       return new NextResponse('Error updating tee time. Tee time does not exist', {status: 400})
     }
 
-    // verify that an authorized user is making the request and that the one who booked the tee time is updating it (extra security layer)
+    // verify that the one who booked the tee time is updating it (extra security layer)
     const verifiedUserToken = await verifyJWT(req)
-    if (!verifiedUserToken || teeTime.userId !== verifiedUserToken.payload.id) {
+    if (verifiedUserToken && teeTime.userId !== verifiedUserToken.payload.id) {
       return new NextResponse('Unauthorized to update tee times', {status: 401})
     }
 

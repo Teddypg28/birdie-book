@@ -3,7 +3,7 @@ import { parse } from "cookie"
 
 import * as jose from 'jose'
 
-export default async function validateTeetimePermissions(req: NextRequest) {
+export default async function verifyJWT(req: NextRequest) {
      // check for cookies
      const cookies = req.headers.get('Cookie')
      if (!cookies) {

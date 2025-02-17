@@ -1,4 +1,4 @@
-import validateTeetimePermissions from '@/auth/verifyJWT'
+import verifyJWT from '@/auth/verifyJWT'
 import { PrismaClient } from '@prisma/client'
 import { NextRequest, NextResponse } from 'next/server'
 
@@ -18,10 +18,10 @@ export async function POST(req: NextRequest) {
       return new NextResponse('Tee time does not exist', {status: 400})
     }
 
-    // verify that an authorized user is making the request and that the one who booked the tee time is cancelling it (extra security layer)
-    const verifiedUserToken = await validateTeetimePermissions(req)
-    if (!verifiedUserToken || teeTime.userId !== verifiedUserToken.payload.id) {
-      return new NextResponse('Unauthorized to delete tee times', {status: 401})
+    // verify that the one who booked the tee time is cancelling it (extra security layer)
+    const verifiedUserToken = await verifyJWT(req)
+    if (verifiedUserToken && teeTime.userId !== verifiedUserToken.payload.id) {
+      return new NextResponse('Unauthorized to cancel tee times', {status: 401})
     }
 
     await db.teeTime.delete({where: {id: teeTimeId}})
