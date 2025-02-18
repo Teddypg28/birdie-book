@@ -6,18 +6,19 @@ const db = new PrismaClient()
 export async function POST(req: NextRequest) {
   try {
 
-    const courseData = await req.json()
+    const formData = await req.formData()
+    const courseData = Object.fromEntries(formData)
 
-    const { name, city, state, type, id } = courseData
+    const { name, city, state, type, id, images } = courseData
   
-    // check for user-submitted blank values that are required
+    // check for blank values that are required
     if (!name || !city || !state || !type || !id) {
       return new NextResponse('Missing required course data', {status: 400})
     }
 
     // update course
-    await db.golfCourse.update({where: {id}, data: {...courseData}})
-  
+    await db.golfCourse.update({where: {id: id as string}, data: {...courseData}})
+
     return new NextResponse('Course successfully updated', {status: 200})
 
   } catch (error) {

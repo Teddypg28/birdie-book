@@ -41,6 +41,8 @@ model User {
   lastName            String
   email               String
   password            String
+  city                String
+  state               String
   isOwner             Boolean      @default(false)
   teeTimesCreated     TeeTime[]
   favoriteGolfCourses GolfCourse[]
@@ -53,6 +55,8 @@ model Owner {
   lastName         String
   email            String
   password         String
+  city             String
+  state            String
   isOwner          Boolean      @default(true)
   golfCoursesOwned GolfCourse[]
 }

@@ -3,19 +3,14 @@ import validTeeTimes from '@/validTeeTimes'
 import { PrismaClient } from '@prisma/client'
 
 import { NextRequest, NextResponse } from 'next/server'
-import verifyJWT from '@/auth/verifyJWT'
 
 const db = new PrismaClient()
  
 export async function POST(req: NextRequest) {
   try {  
     
-    // verify that an authorized user is making the request
-    const verifiedUserToken = await verifyJWT(req)
-    if (!verifiedUserToken) {
-      return new NextResponse('Unauthorized to create tee times', {status: 401})
-    }
-
+    const authTokenUserId = req.headers.get('auth-user-id') as string
+   
     // handle data sent with the request
     const teeTimeData = await req.json()
     const { courseId, time, numHoles, players } = teeTimeData
@@ -38,7 +33,7 @@ export async function POST(req: NextRequest) {
     }
   
     // book tee time
-    await db.teeTime.create({data: {golfCourseId: courseId, time: new Date(time), numHoles, players, userId: verifiedUserToken.payload.id as string}})
+    await db.teeTime.create({data: {golfCourseId: courseId, time: new Date(time), numHoles, players, userId: authTokenUserId}})
     return new NextResponse('Tee time successfully booked', {status: 200})
 
   } catch (error) {

@@ -25,6 +25,6 @@ export default async function middleware(request: NextRequest) {
 }
 
 export const config = {
-    matcher: ['/api/course/update', '/api/review/:path*', '/api/teetime/:path*']
+    matcher: ['/', '/api/courses', '/api/course/update', '/api/review/:path*', '/api/teetime/:path*']
 };
   
