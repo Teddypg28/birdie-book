@@ -6,9 +6,13 @@ Features
 
 For Golfers:
 Create Tee Times: Book available tee times at your favorite golf courses.
+
 Submit Reviews: Rate and review golf courses based on your experience.
+
 Search Golf Courses: Explore a variety of courses, view their details, and check available tee times.
+
 View Booking History: Keep track of your past and upcoming tee time bookings.
+
 Personalized Recommendations: Get course suggestions based on your past bookings and preferences.
 
 For Golf Course Owners:
